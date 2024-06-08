@@ -1,0 +1,22 @@
+{
+    "District_max": 342.0,
+    "District_min": 1.0,
+    "City_max": 9.0,
+    "City_min": 1.0,
+    "Latitude_max": 0.0074957683468534,
+    "Latitude_min": -7.390627384185791,
+    "Longitude_max": 107.5799956,
+    "Longitude_min": 0.009927861392498,
+    "Land_Size_M2_max": 9632.0,
+    "Land_Size_M2_min": 20.0,
+    "Building_Size_M2_max": 4461.0,
+    "Building_Size_M2_min": 21.0,
+    "Floors_max": 14.0,
+    "Floors_min": 1.0,
+    "Bedrooms_max": 56.0,
+    "Bedrooms_min": 1.0,
+    "Bathrooms_max": 56.0,
+    "Bathrooms_min": 1.0,
+    "Carport/Garage_max": 15.0,
+    "Carport/Garage_min": 0.0
+}
