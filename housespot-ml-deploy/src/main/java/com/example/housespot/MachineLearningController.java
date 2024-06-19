@@ -36,8 +36,6 @@ public class MachineLearningController {
 
         String response = tfServingClient.predict(body);
 
-        System.out.println(response);
-
         float predictionFloat = getPredictionFromJson(response);
 
         int roundedPrediction = rounder(predictionFloat);
