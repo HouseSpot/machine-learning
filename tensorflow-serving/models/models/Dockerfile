@@ -12,7 +12,7 @@ COPY my_model /models/my_model
 
 # Expose the TensorFlow Serving ports
 EXPOSE 8500
-EXPOSE 8501
+EXPOSE 8080
 
 # Specify the entrypoint command
-ENTRYPOINT ["tensorflow_model_server", "--rest_api_port=8501", "--model_name=my_model", "--model_base_path=/models/my_model"]
+ENTRYPOINT ["tensorflow_model_server", "--rest_api_port=8080", "--model_name=my_model", "--model_base_path=/models/my_model"]

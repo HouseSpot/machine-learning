@@ -11,7 +11,7 @@ import org.apache.http.util.EntityUtils;
 @Service
 public class MachineLearningService {
 
-    private final String tfServingBaseUrl = "http://localhost:8501/v1/models/my_model:predict";
+    private final String tfServingBaseUrl = "http://35.239.148.49:8501/v1/models/model:predict";
 
     public MachineLearningService() {}
 
