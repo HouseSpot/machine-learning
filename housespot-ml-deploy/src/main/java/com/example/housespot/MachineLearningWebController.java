@@ -367,9 +367,6 @@ public class MachineLearningWebController {
     @PostMapping("/")
     public String predict(@ModelAttribute AttributeFE attributeFE, Model model) throws Exception {
 
-
-        System.out.println(attributeFE.getDistrictAndCity());
-
         String[] parts = attributeFE.getDistrictAndCity().split(",");
 
         String city = parts[0].trim();

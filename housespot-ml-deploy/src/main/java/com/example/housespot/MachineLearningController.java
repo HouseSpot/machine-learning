@@ -106,6 +106,8 @@ public class MachineLearningController {
         private CategoryEncoder() {}
 
         public static String decodeCategory(int encodedValue) {
+            if(encodedValue < 0) encodedValue = 0;
+            if(encodedValue > 10) encodedValue = 10;
             return decodingMap.get(encodedValue);
         }
     }
