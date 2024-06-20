@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Prediksi Harga Rumah</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+
+        .result-card {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h2 {
+            color: #007bff;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="text-center">
+        <h1>Hasil Prediksi Harga Rumah</h1>
+    </div>
+    <div class="result-card mt-4 mx-auto col-md-6 col-lg-4">
+        <h2>Prediksi Harga:</h2>
+        <p class="display-4" id="predictionResult" th:text="${result}"></p>
+        <a href="/" class="btn btn-primary btn-back mt-3">Kembali ke Formulir</a>
+    </div>
+</div>
+</body>
+
+</html>

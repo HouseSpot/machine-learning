@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Prediksi Harga Rumah</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <style>
+        #map {
+            height: 300px; /* Adjust height for smaller screens */
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        #districtCityWrapper {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            padding: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="mt-4">Isi spesifikasi rumah yang diinginkan</h1>
+    <form th:action="@{/}" th:object="${attributeFE}" method="POST">
+        <div id="districtCityWrapper" class="form-group row">
+            <label for="districtCity">Distrik dan Kota:</label>
+            <select class="form-control" id="districtCity" th:field="*{districtAndCity}" onchange="handleDistrictCityChange()">
+                <option th:each="districtCity : ${districtsAndCities}" th:value="${districtCity}" th:text="${districtCity}"></option>
+            </select>
+        </div>
+        <div id="map"></div>
+        <div class="form-group row">
+            <label for="latitude" class="col-sm-2 col-form-label">Latitude:</label>
+            <div class="col-sm-10">
+                <input type="number" step="any" class="form-control" id="latitude" th:field="*{latitude}"
+                       placeholder="Enter latitude" oninput="updateMarker()" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="longitude" class="col-sm-2 col-form-label">Longitude:</label>
+            <div class="col-sm-10">
+                <input type="number" step="any" class="form-control" id="longitude" th:field="*{longitude}"
+                       placeholder="Enter longitude" oninput="updateMarker()" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="landSize" class="col-sm-2 col-form-label">Luas Tanah:</label>
+            <div class="col-sm-10">
+                <input type="number" step="any" class="form-control" id="landSize" th:field="*{landSize}"
+                       placeholder="Enter land size" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="buildingSize" class="col-sm-2 col-form-label">Luas Bangunan:</label>
+            <div class="col-sm-10">
+                <input type="number" step="any" class="form-control" id="buildingSize"
+                       th:field="*{buildingSize}" placeholder="Enter building size" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="floors" class="col-sm-2 col-form-label">Jumlah Lantai:</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="floors" th:field="*{floors}"
+                       placeholder="Enter number of floors" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="bedrooms" class="col-sm-2 col-form-label">Jumlah Kamar Tidur:</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="bedrooms" th:field="*{bedrooms}"
+                       placeholder="Enter number of bedrooms" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="bathrooms" class="col-sm-2 col-form-label">Jumlah Kamar Mandi:</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="bathrooms" th:field="*{bathrooms}"
+                       placeholder="Enter number of bathrooms" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="carportGarage" class="col-sm-2 col-form-label">Jumlah Carport/Garasi:</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="carportGarage" th:field="*{carportGarage}"
+                       placeholder="Enter number of carport/garage spaces" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-10 offset-sm-2">
+                <button type="submit" class="btn btn-primary btn-block">Prediksi!</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+        var map; // Declare map variable globally
+        var marker; // Declare marker variable globally
+
+        function initMap() {
+            const initialLocation = {
+                lat: -6.200000,
+                lng: 106.816666
+            }; // Default center (Jakarta coordinates)
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 11,
+                center: initialLocation
+            });
+
+            marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(map, 'click', function (event) {
+                const clickedLocation = event.latLng;
+                updateMarkerPosition(clickedLocation);
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function (event) {
+                const draggedLocation = event.latLng;
+                updateMarkerPosition(draggedLocation);
+            });
+
+            // Set initial map based on default values
+            var defaultDistrictCity = document.getElementById('districtCity').value;
+            updateMap(defaultDistrictCity);
+        }
+
+        $(document).ready(function () {
+            $('#districtCity').select2({
+                placeholder: 'Pilih Distrik dan Kota',
+                allowClear: true
+            });
+        });
+
+        function handleDistrictCityChange() {
+            var selectedDistrictCity = document.getElementById('districtCity').value;
+            updateMap(selectedDistrictCity);
+        }
+
+        function updateMap(districtCity) {
+            var geocoder = new google.maps.Geocoder();
+            var address = districtCity;
+
+            geocoder.geocode({
+                'address': address
+            }, function (results, status) {
+                if (status === 'OK') {
+                    var location = results[0].geometry.location;
+                    var newCenter = {
+                        lat: location.lat(),
+                        lng: location.lng()
+                    };
+                    map.setCenter(newCenter); // Set center of the map to the new location
+                    marker.setPosition(newCenter); // Move marker to the new location
+                    document.getElementById('latitude').value = location.lat();
+                    document.getElementById('longitude').value = location.lng();
+                } else {
+                    console.log('Geocode was not successful for the following reason: ' + status);
+                    // Handle errors here
+                }
+            });
+        }
+
+        function updateMarker() {
+            var lat = parseFloat(document.getElementById('latitude').value);
+            var lng = parseFloat(document.getElementById('longitude').value);
+
+            var newPosition = {
+                lat: lat,
+                lng: lng
+            };
+
+            marker.setPosition(newPosition);
+            map.setCenter(newPosition);
+        }
+    </script>
+<!-- Replace YOUR_API_KEY with your actual API key below -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7kx4PJGcnrwz0fPWNUGzEH4er7Q4jVRo&callback=initMap" async defer></script>
+</body>
+
+</html>
